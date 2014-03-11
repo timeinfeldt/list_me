@@ -14,14 +14,12 @@ Person.prototype = {
         var self = this;
 
         xhr.onreadystatechange = function() {
-
             if(xhr.readyState==4) {
 
                 if(xhr.status==200) {
                     var data = JSON.parse(xhr.responseText);
 
                     self.append(data.persons);
-
                     self.currentPage += 1;
 
                     if(data.cont==false) {
@@ -37,8 +35,10 @@ Person.prototype = {
     },
 
     append: function(persons) {
+        var div;
+
         for(var i=0; i<persons.length; i++) {
-            var div = document.createElement("div");
+            div = document.createElement("div");
             div.className = "person";
             div.setAttribute('data-id', persons[i].id);
             div.innerHTML = persons[i].name;
