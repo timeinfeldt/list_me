@@ -6,12 +6,26 @@ describe("person", function() {
     });
 
     describe("#get", function(){
-        beforeEach(function() {
-            person.get();
+        describe("when executed", function(){
+            beforeEach(function() {
+                person.get();
+            });
+
+            it("sends xhr request", function() {
+                expect(jasmine.Ajax.requests.mostRecent().url).toBe('persons/');
+            });
         });
 
-        it("sends xhr request", function() {
-            expect(jasmine.Ajax.requests.mostRecent().url).toBe('persons/');
+        describe("when busy", function(){
+            beforeEach(function(){
+                spyOn(person, "before").and.callThrough();
+                person.busy = true;
+                person.get();
+            });
+
+            it("does nothing", function(){
+                expect(person.before).not.toHaveBeenCalled();
+            });
         });
     });
 

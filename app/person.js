@@ -5,6 +5,8 @@ Person = function(){
 
 Person.prototype = {
     get: function() {
+        if(this.busy) { return; }
+
         this.before();
 
         var xhr = new XMLHttpRequest();
