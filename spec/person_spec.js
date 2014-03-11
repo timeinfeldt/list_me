@@ -10,6 +10,7 @@ describe("person", function() {
             beforeEach(function() {
                 spyOn(person, "before").and.callThrough();
                 spyOn(person, "after").and.callThrough();
+                spyOn(person, "append");
                 person.get();
             });
 
@@ -23,8 +24,15 @@ describe("person", function() {
 
             describe("when xhr call completed", function() {
                 describe("when response is success", function() {
-                    it("calls #after", function() {
+                    beforeEach(function() {
                         jasmine.Ajax.requests.mostRecent().response(testResponse.success);
+                    });
+
+                    it("calls #append", function() {
+                        expect(person.append).toHaveBeenCalledWith([{id: 1, name: "John"}]);
+                    });
+
+                    it("calls #after", function() {
                         expect(person.after).toHaveBeenCalled();
                     });
                 });
