@@ -6,21 +6,25 @@ Person = function(){
 Person.prototype = {
     get: function() {
         if(this.busy) { return; }
-
         this.before();
 
         var xhr = new XMLHttpRequest();
+        var self = this;
 
         xhr.onreadystatechange = function() {
 
-            if(xhr.readyState==4 && xhr.status==200) {
-                var data = JSON.parse(xhr.responseText);
+            if(xhr.readyState==4) {
 
-                this.append(data.persons);
+                if(xhr.status==200) {
+                    var data = JSON.parse(xhr.responseText);
 
-                if(persons.cont==false) {
-                    this.cont = false;
+                    self.append(data.persons);
+
+                    if(data.persons.cont==false) {
+                        this.cont = false;
+                    }
                 }
+                self.after();
             }
         };
 
@@ -29,13 +33,17 @@ Person.prototype = {
     },
 
     append: function(persons) {
-        for(person in persons) {
-            dom.append(person);
-        }
+        //for(person in persons) {
+        //    dom.append(person);
+        //}
     },
 
     before: function() {
         this.busy = true;
+    },
+
+    after: function() {
+        this.busy = false;
     }
 
 };
