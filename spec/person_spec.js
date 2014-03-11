@@ -1,10 +1,10 @@
 describe("person", function() {
     var person;
-    var dom;
+    var domTag;
 
     beforeEach(function() {
-        dom = '#persons';
-        person = new Person(dom);
+        domTag = '#persons';
+        person = new Person(domTag);
     });
 
     describe("constructor", function() {
@@ -17,7 +17,7 @@ describe("person", function() {
         })
 
         it("sets dom", function() {
-            expect(person.dom).toEqual(document.querySelector(dom));
+            expect(person.dom).toEqual(document.querySelector(domTag));
         });
     });
 
@@ -104,7 +104,13 @@ describe("person", function() {
     });
 
     describe("#append", function() {
+        beforeEach(function() {
+            persons = [{id: 1, name: "John"}, {id: 2, name: "Thomas"}];
+            person.append(persons);
+        });
+
         it("appends persons to DOM", function() {
+            expect(document.querySelectorAll(".person").length).toEqual(2);
         });
     });
 });

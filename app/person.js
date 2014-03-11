@@ -34,11 +34,12 @@ Person.prototype = {
     },
 
     append: function(persons) {
-        for(var i=0; persons.length; i++) {
+        for(var i=0; i<persons.length; i++) {
             var div = document.createElement("div");
-            div.setAttribute('data', "")
-            div.innerHTML = person[i].name;
-            this.dom.attachChild(div);
+            div.className = "person";
+            div.setAttribute('data-id', persons[i].id);
+            div.innerHTML = persons[i].name;
+            this.dom.appendChild(div);
         }
     },
 
