@@ -1,7 +1,7 @@
 ListMe
 ======
 
-This is a pure js implementation of loading potentiall a long list of data with Ajax.
+This is a pure js implementation of loading potentially long list of data with Ajax.
 
 Preview
 -------
