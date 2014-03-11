@@ -108,6 +108,9 @@ describe("person", function() {
             persons = [{id: 1, name: "John"}, {id: 2, name: "Thomas"}];
             person.append(persons);
         });
+        afterEach(function() {
+            document.querySelector(domTag).innerHTML = null;
+        });
 
         it("appends persons to DOM", function() {
             expect(document.querySelectorAll(".person").length).toEqual(2);
