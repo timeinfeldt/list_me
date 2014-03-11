@@ -1,6 +1,7 @@
-Person = function(){
+Person = function(dom){
     this.cont = true;
     this.busy = false;
+    this.dom = document.querySelector(dom);
 };
 
 Person.prototype = {
@@ -33,9 +34,12 @@ Person.prototype = {
     },
 
     append: function(persons) {
-        //for(person in persons) {
-        //    dom.append(person);
-        //}
+        for(var i=0; persons.length; i++) {
+            var div = document.createElement("div");
+            div.setAttribute('data', "")
+            div.innerHTML = person[i].name;
+            this.dom.attachChild(div);
+        }
     },
 
     before: function() {

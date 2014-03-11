@@ -1,12 +1,28 @@
 describe("person", function() {
     var person;
+    var dom;
 
     beforeEach(function() {
-        person = new Person();
+        dom = '#persons';
+        person = new Person(dom);
     });
 
-    describe("#get", function(){
-        describe("when executed", function(){
+    describe("constructor", function() {
+        it("sets cont=true", function() {
+            expect(person.cont).toEqual(true);
+        });
+
+        it("sets busy=false", function() {
+            expect(person.busy).toEqual(false);
+        })
+
+        it("sets dom", function() {
+            expect(person.dom).toEqual(document.querySelector(dom));
+        });
+    });
+
+    describe("#get", function() {
+        describe("when executed", function() {
             beforeEach(function() {
                 spyOn(person, "before").and.callThrough();
                 spyOn(person, "after").and.callThrough();
@@ -84,6 +100,11 @@ describe("person", function() {
 
         it("sets busy=false", function() {
             expect(person.busy).toEqual(false);
+        });
+    });
+
+    describe("#append", function() {
+        it("appends persons to DOM", function() {
         });
     });
 });
