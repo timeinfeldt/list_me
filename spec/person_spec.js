@@ -35,6 +35,13 @@ describe("person", function() {
                         expect(person.after).toHaveBeenCalled();
                     });
                 });
+
+                describe("when there are no more pages", function() {
+                    it("sets cont=false", function() {
+                        jasmine.Ajax.requests.mostRecent().response(testResponse.end);
+                        expect(person.cont).toEqual(false);
+                    });
+                });
             });
         });
 

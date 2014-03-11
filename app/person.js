@@ -5,7 +5,7 @@ Person = function(){
 
 Person.prototype = {
     get: function() {
-        if(this.busy) { return; }
+        if(this.busy || !this.cont) { return; }
         this.before();
 
         var xhr = new XMLHttpRequest();
@@ -20,8 +20,8 @@ Person.prototype = {
 
                     self.append(data.persons);
 
-                    if(data.persons.cont==false) {
-                        this.cont = false;
+                    if(data.cont==false) {
+                        self.cont = false;
                     }
                 }
                 self.after();
