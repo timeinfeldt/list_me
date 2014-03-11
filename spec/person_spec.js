@@ -28,14 +28,14 @@ describe("person", function() {
     describe("#get", function() {
         describe("when executed", function() {
             beforeEach(function() {
-                spyOn(person, "before").and.callThrough();
-                spyOn(person, "after").and.callThrough();
-                spyOn(person, "append");
+                spyOn(person, "_beforeHooks").and.callThrough();
+                spyOn(person, "_afterHooks").and.callThrough();
+                spyOn(person, "_append");
                 person.get();
             });
 
-            it("calls #before", function() {
-                expect(person.before).toHaveBeenCalled();
+            it("calls #_beforeHooks", function() {
+                expect(person._beforeHooks).toHaveBeenCalled();
             });
 
             it("sends xhr request with page number", function() {
@@ -48,23 +48,23 @@ describe("person", function() {
                         jasmine.Ajax.requests.mostRecent().response(testResponse.success);
                     });
 
-                    it("calls #append", function() {
-                        expect(person.append).toHaveBeenCalledWith([{id: 1, name: "John"}]);
+                    it("calls #_append", function() {
+                        expect(person._append).toHaveBeenCalledWith([{id: 1, name: "John"}]);
                     });
 
                     it("increments current page number", function() {
                         expect(person.currentPage).toEqual(2);
                     });
 
-                    it("calls #after", function() {
-                        expect(person.after).toHaveBeenCalled();
+                    it("calls #_afterHooks", function() {
+                        expect(person._afterHooks).toHaveBeenCalled();
                     });
                 });
 
                 describe("when response code is not success", function() {
-                    it("calls #after", function() {
+                    it("calls #_afterHooks", function() {
                         jasmine.Ajax.requests.mostRecent().response(testResponse.notFound);
-                        expect(person.after).toHaveBeenCalled();
+                        expect(person._afterHooks).toHaveBeenCalled();
                     });
                 });
 
@@ -79,20 +79,20 @@ describe("person", function() {
 
         describe("when busy", function(){
             beforeEach(function(){
-                spyOn(person, "before").and.callThrough();
+                spyOn(person, "_beforeHooks").and.callThrough();
                 person.busy = true;
                 person.get();
             });
 
             it("does nothing", function(){
-                expect(person.before).not.toHaveBeenCalled();
+                expect(person._beforeHooks).not.toHaveBeenCalled();
             });
         });
     });
 
-    describe("#before", function() {
+    describe("#_beforeHooks", function() {
         beforeEach(function(){
-            person.before();
+            person._beforeHooks();
         });
 
         it("sets busy=true", function(){
@@ -100,10 +100,10 @@ describe("person", function() {
         });
     });
 
-    describe("#after", function() {
+    describe("#_afterHooks", function() {
         beforeEach(function() {
             person.busy = true;
-            person.after();
+            person._afterHooks();
         });
 
         it("sets busy=false", function() {
@@ -111,10 +111,10 @@ describe("person", function() {
         });
     });
 
-    describe("#append", function() {
+    describe("#_append", function() {
         beforeEach(function() {
             persons = [{id: 1, name: "John"}, {id: 2, name: "Thomas"}];
-            person.append(persons);
+            person._append(persons);
         });
         afterEach(function() {
             document.querySelector(domTag).innerHTML = null;

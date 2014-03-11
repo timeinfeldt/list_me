@@ -8,7 +8,7 @@ Person = function(dom){
 Person.prototype = {
     get: function() {
         if(this.busy || !this.cont) { return; }
-        this.before();
+        this._beforeHooks();
 
         var xhr = new XMLHttpRequest();
         var self = this;
@@ -19,14 +19,14 @@ Person.prototype = {
                 if(xhr.status==200) {
                     var data = JSON.parse(xhr.responseText);
 
-                    self.append(data.persons);
+                    self._append(data.persons);
                     self.currentPage += 1;
 
                     if(data.cont==false) {
                         self.cont = false;
                     }
                 }
-                self.after();
+                self._afterHooks();
             }
         };
 
@@ -34,7 +34,7 @@ Person.prototype = {
         xhr.send();
     },
 
-    append: function(persons) {
+    _append: function(persons) {
         var div;
 
         for(var i=0; i<persons.length; i++) {
@@ -46,11 +46,11 @@ Person.prototype = {
         }
     },
 
-    before: function() {
+    _beforeHooks: function() {
         this.busy = true;
     },
 
-    after: function() {
+    _afterHooks: function() {
         this.busy = false;
     }
 
