@@ -1,11 +1,39 @@
-Person = function(){};
-
-// Ajax call should be implemented for any useful web applications.
-Person.prototype.json = function(){
-    var json = '[{"id":1,"name":"Johan"},{"id":2,"name":"Thomas"},{"id":3,"name":"Hanna"},{"id":4,"name":"Johanna"}]'
-    return json;
+Person = function(){
+    this.cont = true;
+    this.busy = false;
 };
 
-Person.prototype.get = function() {
-    return JSON.parse(this.json());
+Person.prototype = {
+    get: function() {
+        this.before();
+
+        var xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = function() {
+
+            if(xhr.readyState==4 && xhr.status==200) {
+                var data = JSON.parse(xhr.responseText);
+
+                this.append(data.persons);
+
+                if(persons.cont==false) {
+                    this.cont = false;
+                }
+            }
+        };
+
+        xhr.open("GET","persons/",true);
+        xhr.send();
+    },
+
+    append: function(persons) {
+        for(person in persons) {
+            dom.append(person);
+        }
+    },
+
+    before: function() {
+        this.busy = true;
+    }
+
 };

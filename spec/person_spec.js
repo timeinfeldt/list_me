@@ -1,24 +1,27 @@
 describe("person", function() {
     var person;
 
-    var persons = [
-      {id: 1, name: "John"},
-      {id: 2, name: "Thomas"},
-    ];
-
     beforeEach(function() {
         person = new Person();
     });
 
     describe("#get", function(){
         beforeEach(function() {
-            person.json = function(){
-                return '[{"id":1,"name":"John"},{"id":2,"name":"Thomas"}]';
-            };
+            person.get();
         });
 
-        it("fetches persons", function() {
-            expect(person.get()).toEqual(persons);
+        it("sends xhr request", function() {
+            expect(jasmine.Ajax.requests.mostRecent().url).toBe('persons/');
+        });
+    });
+
+    describe("#before", function() {
+        beforeEach(function(){
+            person.before();
+        });
+
+        it("sets busy=true", function(){
+            expect(person.busy).toEqual(true);
         });
     });
 });
