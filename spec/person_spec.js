@@ -19,6 +19,10 @@ describe("person", function() {
         it("sets dom", function() {
             expect(person.dom).toEqual(document.querySelector(domTag));
         });
+
+        it("sets currentPage=0", function() {
+            expect(person.currentPage).toEqual(1);
+        });
     });
 
     describe("#get", function() {
@@ -34,9 +38,9 @@ describe("person", function() {
                 expect(person.before).toHaveBeenCalled();
             });
 
-            it("sends xhr request", function() {
-                expect(jasmine.Ajax.requests.mostRecent().url).toBe('persons/');
-            });
+            it("sends xhr request with page number", function() {
+                expect(jasmine.Ajax.requests.mostRecent().url).toBe('persons/?page=1');
+            })
 
             describe("when xhr call completed", function() {
                 describe("when response is success", function() {
@@ -46,6 +50,10 @@ describe("person", function() {
 
                     it("calls #append", function() {
                         expect(person.append).toHaveBeenCalledWith([{id: 1, name: "John"}]);
+                    });
+
+                    it("increments current page number", function() {
+                        expect(person.currentPage).toEqual(2);
                     });
 
                     it("calls #after", function() {

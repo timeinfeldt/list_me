@@ -1,6 +1,7 @@
 Person = function(dom){
     this.cont = true;
     this.busy = false;
+    this.currentPage = 1;
     this.dom = document.querySelector(dom);
 };
 
@@ -21,6 +22,8 @@ Person.prototype = {
 
                     self.append(data.persons);
 
+                    self.currentPage += 1;
+
                     if(data.cont==false) {
                         self.cont = false;
                     }
@@ -29,7 +32,7 @@ Person.prototype = {
             }
         };
 
-        xhr.open("GET","persons/",true);
+        xhr.open("GET","persons/?page=" + this.currentPage ,true);
         xhr.send();
     },
 
