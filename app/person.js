@@ -18,15 +18,7 @@ Person.prototype = {
             if(this.readyState==4) {
 
                 if(this.status==200) {
-                    var data = JSON.parse(this.responseText);
-
-                    self._append(data.persons);
-                    self.currentPage += 1;
-
-                    if(data.cont==false) {
-                        self.cont = false;
-                    }
-                    self._afterHooks();
+                    self._handleSuccess(this);
                 } else {
                     self._handleErrors(this);
                 }
@@ -35,6 +27,18 @@ Person.prototype = {
 
         xhr.open("GET","persons/?page=" + this.currentPage ,true);
         xhr.send();
+    },
+
+    _handleSuccess: function(xhr) {
+        var data = JSON.parse(xhr.responseText);
+
+        this._append(data.persons);
+        this.currentPage += 1;
+
+        if(data.cont==false) {
+            this.cont = false;
+        }
+        this._afterHooks();
     },
 
     _handleErrors: function(xhr) {

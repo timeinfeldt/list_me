@@ -50,19 +50,12 @@ describe("person", function() {
             describe("when xhr call completed", function() {
                 describe("when response is success", function() {
                     beforeEach(function() {
+                        spyOn(person, "_handleSuccess");
                         jasmine.Ajax.requests.mostRecent().response(testResponse.success);
                     });
 
-                    it("calls #_append", function() {
-                        expect(person._append).toHaveBeenCalledWith([{id: 1, name: "John"}]);
-                    });
-
-                    it("increments current page number", function() {
-                        expect(person.currentPage).toEqual(2);
-                    });
-
-                    it("calls #_afterHooks", function() {
-                        expect(person._afterHooks).toHaveBeenCalled();
+                    it("calls _handleSuccess", function() {
+                        expect(person._handleSuccess).toHaveBeenCalled();
                     });
                 });
 
@@ -98,6 +91,27 @@ describe("person", function() {
             it("does nothing", function(){
                 expect(person._beforeHooks).not.toHaveBeenCalled();
             });
+        });
+    });
+
+    describe("#_handleSuccess", function() {
+        beforeEach(function(){
+            var xhr = testResponse.success;
+            spyOn(person, "_append");
+            spyOn(person, "_afterHooks");
+            person._handleSuccess(xhr);
+        });
+
+        it("calls #_append", function() {
+            expect(person._append).toHaveBeenCalledWith([{id: 1, name: "John"}]);
+        });
+
+        it("increments current page number", function() {
+            expect(person.currentPage).toEqual(2);
+        });
+
+        it("calls #_afterHooks", function() {
+            expect(person._afterHooks).toHaveBeenCalled();
         });
     });
 
