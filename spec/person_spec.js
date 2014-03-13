@@ -23,6 +23,10 @@ describe("person", function() {
         it("sets currentPage=0", function() {
             expect(person.currentPage).toEqual(1);
         });
+
+        it("sets tries=0", function() {
+            expect(person.tries).toEqual(0);
+        });
     });
 
     describe("#get", function() {
@@ -31,6 +35,8 @@ describe("person", function() {
                 spyOn(person, "_beforeHooks").and.callThrough();
                 spyOn(person, "_afterHooks").and.callThrough();
                 spyOn(person, "_append");
+                spyOn(person, "_promptErrors").and.callThrough();
+                spyOn(XMLHttpRequest.prototype, "send").and.callThrough();
                 person.get();
             });
 
@@ -62,8 +68,25 @@ describe("person", function() {
                 });
 
                 describe("when response code is not success", function() {
+                    beforeEach(function() {
+                        for(var i=0;i<3;i++) {
+                            jasmine.Ajax.requests.mostRecent().response(testResponse.notFound);
+                        }
+                    });
+
+                    it("attempts to get data three times", function() {
+                        expect(XMLHttpRequest.prototype.send.calls.count()).toEqual(3);
+                    });
+
+                    it("prompts error message", function() {
+                        expect(person._promptErrors).toHaveBeenCalledWith("Cannot retreive data.");;
+                    });
+
+                    it("resets counter", function() {
+                        expect(person.tries).toEqual(0);
+                    });
+
                     it("calls #_afterHooks", function() {
-                        jasmine.Ajax.requests.mostRecent().response(testResponse.notFound);
                         expect(person._afterHooks).toHaveBeenCalled();
                     });
                 });

@@ -1,6 +1,7 @@
 Person = function(dom){
     this.cont = true;
     this.busy = false;
+    this.tries = 0;
     this.currentPage = 1;
     this.dom = document.querySelector(dom);
 };
@@ -14,10 +15,10 @@ Person.prototype = {
         var self = this;
 
         xhr.onreadystatechange = function() {
-            if(xhr.readyState==4) {
+            if(this.readyState==4) {
 
-                if(xhr.status==200) {
-                    var data = JSON.parse(xhr.responseText);
+                if(this.status==200) {
+                    var data = JSON.parse(this.responseText);
 
                     self._append(data.persons);
                     self.currentPage += 1;
@@ -25,8 +26,17 @@ Person.prototype = {
                     if(data.cont==false) {
                         self.cont = false;
                     }
+                    self._afterHooks();
+                } else {
+
+                    if (self.tries < 2) {
+                        this.send();
+                        self.tries++;
+                    } else {
+                        self._promptErrors("Cannot retreive data.");
+                        self._afterHooks();
+                    }
                 }
-                self._afterHooks();
             }
         };
 
@@ -46,12 +56,15 @@ Person.prototype = {
         }
     },
 
+    _promptErrors: function() {},
+
     _beforeHooks: function() {
         this.busy = true;
     },
 
     _afterHooks: function() {
         this.busy = false;
+        this.tries = 0;
     }
 
 };
