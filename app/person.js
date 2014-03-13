@@ -1,3 +1,5 @@
+var xhr
+
 Person = function(dom){
     this.cont = true;
     this.busy = false;
@@ -8,19 +10,18 @@ Person = function(dom){
 
 Person.prototype = {
     get: function() {
+        var self = this;
+        xhr =  new XMLHttpRequest();
+
         if(this.busy || !this.cont) { return; }
         this._beforeHooks();
-
-        var xhr = new XMLHttpRequest();
-        var self = this;
-
         xhr.onreadystatechange = function() {
             if(this.readyState==4) {
 
                 if(this.status==200) {
                     self._handleSuccess(this);
                 } else {
-                    self._handleErrors(this);
+                    self._handleErrors();
                 }
             }
         };
@@ -29,7 +30,7 @@ Person.prototype = {
         xhr.send();
     },
 
-    _handleSuccess: function(xhr) {
+    _handleSuccess: function() {
         var data = JSON.parse(xhr.responseText);
 
         this._append(data.persons);
@@ -41,7 +42,7 @@ Person.prototype = {
         this._afterHooks();
     },
 
-    _handleErrors: function(xhr) {
+    _handleErrors: function() {
         if (this.tries < 2) {
             xhr.send();
             this.tries++;
@@ -65,13 +66,20 @@ Person.prototype = {
 
     _promptErrors: function() {},
 
+    _handleTimeout: function() {
+        xhr.abort();
+        this._afterHooks();
+    },
+
     _beforeHooks: function() {
         this.busy = true;
+        this.timer = setTimeout(this._handleTimeout, 3000);
     },
 
     _afterHooks: function() {
         this.busy = false;
         this.tries = 0;
+        clearTimeout(this.timer);
     }
 
 };

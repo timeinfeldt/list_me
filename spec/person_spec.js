@@ -5,6 +5,7 @@ describe("person", function() {
     beforeEach(function() {
         domTag = '#persons';
         person = new Person(domTag);
+        spyOn(window, "setTimeout");
     });
 
     describe("constructor", function() {
@@ -61,7 +62,7 @@ describe("person", function() {
 
                 describe("when response code is not success", function() {
                     beforeEach(function() {
-                        spyOn(person, "_handleErrors").and.callThrough();
+                        spyOn(person, "_handleErrors");
                         for(var i=0;i<3;i++) {
                             jasmine.Ajax.requests.mostRecent().response(testResponse.notFound);
                         }
@@ -83,7 +84,7 @@ describe("person", function() {
 
         describe("when busy", function(){
             beforeEach(function(){
-                spyOn(person, "_beforeHooks").and.callThrough();
+                spyOn(person, "_beforeHooks");
                 person.busy = true;
                 person.get();
             });
@@ -95,11 +96,11 @@ describe("person", function() {
     });
 
     describe("#_handleSuccess", function() {
-        beforeEach(function(){
-            var xhr = testResponse.success;
+        beforeEach(function() {
             spyOn(person, "_append");
             spyOn(person, "_afterHooks");
-            person._handleSuccess(xhr);
+            window.xhr.responseText = testResponse.success.responseText;
+            person._handleSuccess();
         });
 
         it("calls #_append", function() {
@@ -116,20 +117,17 @@ describe("person", function() {
     });
 
     describe("#_handleErrors", function() {
-        var xhr;
-
         beforeEach(function() {
-            xhr = { send: function() {} };
+            spyOn(XMLHttpRequest.prototype, "send");
         });
 
         describe("when called for the first time", function() {
             beforeEach(function() {
-                spyOn(xhr, "send");
-                person._handleErrors(xhr);
+                person._handleErrors();
             });
 
             it("calls xhr.send", function() {
-                expect(xhr.send).toHaveBeenCalled();
+                expect(XMLHttpRequest.prototype.send).toHaveBeenCalled();
             });
 
             it("increments the counter", function() {
@@ -141,21 +139,16 @@ describe("person", function() {
             beforeEach(function() {
                 person.tries = 2;
                 spyOn(person, "_promptErrors");
-                spyOn(person, "_afterHooks").and.callThrough();
-                spyOn(xhr, "send");
+                spyOn(person, "_afterHooks");
                 person._handleErrors();
             });
 
             it("does not call xhr.send", function() {
-                expect(xhr.send).not.toHaveBeenCalled();
+                expect(XMLHttpRequest.prototype.send).not.toHaveBeenCalled();
             });
 
             it("prompts error message", function() {
                 expect(person._promptErrors).toHaveBeenCalledWith("Cannot retreive data.");;
-            });
-
-            it("resets counter", function() {
-                expect(person.tries).toEqual(0);
             });
 
             it("calls #_afterHooks", function() {
@@ -172,16 +165,30 @@ describe("person", function() {
         it("sets busy=true", function(){
             expect(person.busy).toEqual(true);
         });
+
+        it("sets timeout", function() {
+            expect(window.setTimeout).toHaveBeenCalled();
+        });
     });
 
     describe("#_afterHooks", function() {
         beforeEach(function() {
             person.busy = true;
+            person.tries = 1;
+            spyOn(window, "clearTimeout");
             person._afterHooks();
         });
 
         it("sets busy=false", function() {
             expect(person.busy).toEqual(false);
+        });
+
+        it("resets tries counter", function() {
+            expect(person.tries).toEqual(0);
+        });
+
+        it("clears timeout", function() {
+            expect(window.clearTimeout).toHaveBeenCalled();
         });
     });
 
