@@ -28,20 +28,23 @@ Person.prototype = {
                     }
                     self._afterHooks();
                 } else {
-
-                    if (self.tries < 2) {
-                        this.send();
-                        self.tries++;
-                    } else {
-                        self._promptErrors("Cannot retreive data.");
-                        self._afterHooks();
-                    }
+                    self._handleErrors(this);
                 }
             }
         };
 
         xhr.open("GET","persons/?page=" + this.currentPage ,true);
         xhr.send();
+    },
+
+    _handleErrors: function(xhr) {
+        if (this.tries < 2) {
+            xhr.send();
+            this.tries++;
+        } else {
+            this._promptErrors("Cannot retreive data.");
+            this._afterHooks();
+        }
     },
 
     _append: function(persons) {

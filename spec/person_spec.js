@@ -32,11 +32,10 @@ describe("person", function() {
     describe("#get", function() {
         describe("when executed", function() {
             beforeEach(function() {
-                spyOn(person, "_beforeHooks").and.callThrough();
-                spyOn(person, "_afterHooks").and.callThrough();
+                spyOn(person, "_beforeHooks");
+                spyOn(person, "_afterHooks");
                 spyOn(person, "_append");
-                spyOn(person, "_promptErrors").and.callThrough();
-                spyOn(XMLHttpRequest.prototype, "send").and.callThrough();
+                spyOn(XMLHttpRequest.prototype, "send");
                 person.get();
             });
 
@@ -69,25 +68,14 @@ describe("person", function() {
 
                 describe("when response code is not success", function() {
                     beforeEach(function() {
+                        spyOn(person, "_handleErrors").and.callThrough();
                         for(var i=0;i<3;i++) {
                             jasmine.Ajax.requests.mostRecent().response(testResponse.notFound);
                         }
                     });
 
-                    it("attempts to get data three times", function() {
-                        expect(XMLHttpRequest.prototype.send.calls.count()).toEqual(3);
-                    });
-
-                    it("prompts error message", function() {
-                        expect(person._promptErrors).toHaveBeenCalledWith("Cannot retreive data.");;
-                    });
-
-                    it("resets counter", function() {
-                        expect(person.tries).toEqual(0);
-                    });
-
-                    it("calls #_afterHooks", function() {
-                        expect(person._afterHooks).toHaveBeenCalled();
+                    it("handles error cases", function() {
+                        expect(person._handleErrors).toHaveBeenCalled();
                     });
                 });
 
@@ -109,6 +97,55 @@ describe("person", function() {
 
             it("does nothing", function(){
                 expect(person._beforeHooks).not.toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe("#_handleErrors", function() {
+        var xhr;
+
+        beforeEach(function() {
+            xhr = { send: function() {} };
+        });
+
+        describe("when called for the first time", function() {
+            beforeEach(function() {
+                spyOn(xhr, "send");
+                person._handleErrors(xhr);
+            });
+
+            it("calls xhr.send", function() {
+                expect(xhr.send).toHaveBeenCalled();
+            });
+
+            it("increments the counter", function() {
+                expect(person.tries).toEqual(1);
+            });
+        });
+
+        describe("when called for the third time", function(){
+            beforeEach(function() {
+                person.tries = 2;
+                spyOn(person, "_promptErrors");
+                spyOn(person, "_afterHooks").and.callThrough();
+                spyOn(xhr, "send");
+                person._handleErrors();
+            });
+
+            it("does not call xhr.send", function() {
+                expect(xhr.send).not.toHaveBeenCalled();
+            });
+
+            it("prompts error message", function() {
+                expect(person._promptErrors).toHaveBeenCalledWith("Cannot retreive data.");;
+            });
+
+            it("resets counter", function() {
+                expect(person.tries).toEqual(0);
+            });
+
+            it("calls #_afterHooks", function() {
+                expect(person._afterHooks).toHaveBeenCalled();
             });
         });
     });
