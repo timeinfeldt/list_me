@@ -28,5 +28,18 @@ describe("LongList", function() {
     });
 
     describe("#get", function() {
+        beforeEach(function() {
+            spyOn(Async, 'get');
+            buddyList.get();
+        });
+
+        it("sets busy status to true", function() {
+            expect(buddyList.busy).toBeTruthy;;
+        });
+
+        it("calls Async with url and callbacks", function() {
+            expect(Async.get).toHaveBeenCalledWith(
+                "www.example.com/persons/?page=1", buddyList._successFn, buddyList._errorFn);
+        });
     });
 });

@@ -9,12 +9,6 @@ function Person(dom) {
 };
 
 Person.prototype = {
-    get:
-        if(this.busy || !this.cont) { return; }
-        this._beforeHooks();
-        xhr.open("GET","persons/?page=" + this.currentPage ,true);
-   },
-
     _handleSuccess: function() {
         var data = JSON.parse(xhr.responseText);
 
@@ -28,13 +22,7 @@ Person.prototype = {
     },
 
     _handleErrors: function() {
-        if (this.tries < 2) {
-            xhr.send();
-            this.tries++;
-        } else {
             this._promptErrors("Cannot retreive data.");
-            this._afterHooks();
-        }
     },
 
     _append: function(persons) {

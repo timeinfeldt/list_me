@@ -10,5 +10,17 @@
         this.dom = document.querySelector(domSelector);
     }
 
+    LongList.prototype.get = function() {
+        var list = this;
+        if (!this.busy && this.cont) {
+            this.busy == true;
+            Async.get(list.url + '?page=' + list.currentPage, list._successFn, list._errorFn);
+        }
+    };
+
+    LongList.prototype._successFn = function() {};
+
+    LongList.prototype._errorFn = function() {};
+
     window.LongList = LongList;
 })();
