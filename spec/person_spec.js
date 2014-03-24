@@ -24,10 +24,6 @@ describe("person", function() {
         it("sets currentPage=0", function() {
             expect(person.currentPage).toEqual(1);
         });
-
-        it("sets tries=0", function() {
-            expect(person.tries).toEqual(0);
-        });
     });
 
     describe("#get", function() {

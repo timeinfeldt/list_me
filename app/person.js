@@ -1,34 +1,21 @@
+"use strict";
+
+// Usage (new Person(dom)).get();
 var xhr
 
-Person = function(dom){
+function Person(dom) {
     this.cont = true;
     this.busy = false;
-    this.tries = 0;
     this.currentPage = 1;
     this.dom = document.querySelector(dom);
 };
 
 Person.prototype = {
-    get: function() {
-        var self = this;
-        xhr =  new XMLHttpRequest();
-
+    get:
         if(this.busy || !this.cont) { return; }
         this._beforeHooks();
-        xhr.onreadystatechange = function() {
-            if(this.readyState==4) {
-
-                if(this.status==200) {
-                    self._handleSuccess(this);
-                } else {
-                    self._handleErrors();
-                }
-            }
-        };
-
         xhr.open("GET","persons/?page=" + this.currentPage ,true);
-        xhr.send();
-    },
+   },
 
     _handleSuccess: function() {
         var data = JSON.parse(xhr.responseText);
