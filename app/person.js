@@ -1,8 +1,6 @@
 "use strict";
 
 // Usage (new Person(dom)).get();
-var xhr
-
 function Person(dom) {
     this.cont = true;
     this.busy = false;

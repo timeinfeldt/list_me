@@ -29,15 +29,8 @@ describe("person", function() {
     describe("#get", function() {
         describe("when executed", function() {
             beforeEach(function() {
-                spyOn(person, "_beforeHooks");
-                spyOn(person, "_afterHooks");
                 spyOn(person, "_append");
-                spyOn(XMLHttpRequest.prototype, "send");
                 person.get();
-            });
-
-            it("calls #_beforeHooks", function() {
-                expect(person._beforeHooks).toHaveBeenCalled();
             });
 
             it("sends xhr request with page number", function() {
@@ -59,9 +52,6 @@ describe("person", function() {
                 describe("when response code is not success", function() {
                     beforeEach(function() {
                         spyOn(person, "_handleErrors");
-                        for(var i=0;i<3;i++) {
-                            jasmine.Ajax.requests.mostRecent().response(testResponse.notFound);
-                        }
                     });
 
                     it("handles error cases", function() {
@@ -80,21 +70,17 @@ describe("person", function() {
 
         describe("when busy", function(){
             beforeEach(function(){
-                spyOn(person, "_beforeHooks");
                 person.busy = true;
                 person.get();
             });
 
-            it("does nothing", function(){
-                expect(person._beforeHooks).not.toHaveBeenCalled();
-            });
+            it("does nothing", function(){ });
         });
     });
 
     describe("#_handleSuccess", function() {
         beforeEach(function() {
             spyOn(person, "_append");
-            spyOn(person, "_afterHooks");
             window.xhr.responseText = testResponse.success.responseText;
             person._handleSuccess();
         });
@@ -106,64 +92,22 @@ describe("person", function() {
         it("increments current page number", function() {
             expect(person.currentPage).toEqual(2);
         });
-
-        it("calls #_afterHooks", function() {
-            expect(person._afterHooks).toHaveBeenCalled();
-        });
     });
 
     describe("#_handleErrors", function() {
-        beforeEach(function() {
-            spyOn(XMLHttpRequest.prototype, "send");
-        });
-
-        describe("when called for the first time", function() {
-            beforeEach(function() {
-                person._handleErrors();
-            });
-
-            it("calls xhr.send", function() {
-                expect(XMLHttpRequest.prototype.send).toHaveBeenCalled();
-            });
-
-            it("increments the counter", function() {
-                expect(person.tries).toEqual(1);
-            });
-        });
-
         describe("when called for the third time", function(){
             beforeEach(function() {
-                person.tries = 2;
                 spyOn(person, "_promptErrors");
-                spyOn(person, "_afterHooks");
                 person._handleErrors();
-            });
-
-            it("does not call xhr.send", function() {
-                expect(XMLHttpRequest.prototype.send).not.toHaveBeenCalled();
             });
 
             it("prompts error message", function() {
-                expect(person._promptErrors).toHaveBeenCalledWith("Cannot retreive data.");;
+                expect(person._promptErrors).toHaveBeenCalledWith("Cannot retreive data.");
             });
-
-            it("calls #_afterHooks", function() {
-                expect(person._afterHooks).toHaveBeenCalled();
-            });
-        });
-    });
-
-    describe("#_beforeHooks", function() {
-        beforeEach(function(){
-            person._beforeHooks();
         });
 
         it("sets busy=true", function(){
             expect(person.busy).toEqual(true);
-        });
-
-        it("sets timeout", function() {
-            expect(window.setTimeout).toHaveBeenCalled();
         });
     });
 
@@ -171,20 +115,11 @@ describe("person", function() {
         beforeEach(function() {
             person.busy = true;
             person.tries = 1;
-            spyOn(window, "clearTimeout");
             person._afterHooks();
         });
 
         it("sets busy=false", function() {
             expect(person.busy).toEqual(false);
-        });
-
-        it("resets tries counter", function() {
-            expect(person.tries).toEqual(0);
-        });
-
-        it("clears timeout", function() {
-            expect(window.clearTimeout).toHaveBeenCalled();
         });
     });
 
