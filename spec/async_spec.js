@@ -93,7 +93,7 @@ describe("Async", function() {
         });
 
         it("executes error-handling function.", function() {
-            expect(async.errorFn).toHaveBeenCalledWith("Request timed out.");
+            expect(async.errorFn).toHaveBeenCalledWith(async.xhr);
         });
     });
 });

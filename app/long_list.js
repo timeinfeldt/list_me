@@ -27,9 +27,16 @@
         this.busy = false;
     };
 
+    LongList.prototype._errorFn = function(xhr) {
+        var msg = xhr.status ? "Cannot retrieve data from server." : "Request timed out.";
+        this._promptErrors(msg);
+        this.busy = false;
+    };
+
+    // Below methods can be extracted to an independent module or class.
     LongList.prototype._append = function() {};
 
-    LongList.prototype._errorFn = function() {};
+    LongList.prototype._promptErrors = function() {};
 
     window.LongList = LongList;
 })();

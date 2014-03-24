@@ -17,8 +17,10 @@
 
         this.timer = setTimeout(async._ontimeout, 3000);
         this.xhr.onreadystatechange = function() {
+            var xhr = this;
+
             if (this.readyState == 4) {
-                this.status == 200 ? async.successFn(this.data) : async.errorFn("Cannot retrieve data from server.")
+                this.status == 200 ? async.successFn(xhr) : async.errorFn(xhr)
                 clearTimeout(async.timer);
             }
         };
@@ -30,7 +32,7 @@
         var async = this;
         clearTimeout(async.timer);
         this.xhr.abort();
-        this.errorFn("Request timed out.");
+        this.errorFn();
     };
 
     window.Async = Async;

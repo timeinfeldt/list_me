@@ -102,4 +102,32 @@ describe("LongList", function() {
             });
         });
     });
+
+    describe("#_errorFn", function() {
+        beforeEach(function() {
+            spyOn(buddyList, '_promptErrors');
+        });
+
+        describe("when xhr object has status code", function() {
+            it("prompts that we cannot get data from the server.", function() {
+                buddyList._errorFn({status: 404});
+                expect(buddyList._promptErrors)
+                    .toHaveBeenCalledWith("Cannot retrieve data from server.");
+            });
+        });
+
+        describe("when xhr object has no status code,", function() {
+            it("prompts that the server is not responding.", function() {
+                buddyList._errorFn({});
+                expect(buddyList._promptErrors)
+                    .toHaveBeenCalledWith("Request timed out.");
+            });
+        });
+
+        it("sets busy state to false", function() {
+            buddyList.busy = true;
+            buddyList._errorFn({});
+            expect(buddyList.busy).toEqual(false);
+        });
+    });
 });
