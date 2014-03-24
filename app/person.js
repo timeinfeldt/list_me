@@ -9,18 +9,6 @@ function Person(dom) {
 };
 
 Person.prototype = {
-    _handleSuccess: function() {
-        var data = JSON.parse(xhr.responseText);
-
-        this._append(data.persons);
-        this.currentPage += 1;
-
-        if(data.cont==false) {
-            this.cont = false;
-        }
-        this._afterHooks();
-    },
-
     _handleErrors: function() {
             this._promptErrors("Cannot retreive data.");
     },
@@ -39,11 +27,6 @@ Person.prototype = {
 
     _promptErrors: function() {},
 
-    _handleTimeout: function() {
-        xhr.abort();
-        this._afterHooks();
-    },
-
     _beforeHooks: function() {
         this.busy = true;
         this.timer = setTimeout(this._handleTimeout, 3000);
@@ -51,8 +34,6 @@ Person.prototype = {
 
     _afterHooks: function() {
         this.busy = false;
-        this.tries = 0;
-        clearTimeout(this.timer);
     }
 
 };
