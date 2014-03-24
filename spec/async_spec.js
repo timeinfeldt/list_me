@@ -1,33 +1,38 @@
 describe("Async", function() {
     beforeEach(function() {
-        async = new Async;
+        window.tmp = {};
+        tmp.fn1 = tmp.fn2 = function() {};
+        async = new Async(tmp.fn1, tmp.fn2);
+    });
+
+    afterEach(function() {
+        window.tmp = null;
     });
 
     describe("constructor", function() {
         it("has a xhr object.", function() {
             expect(async.xhr instanceof XMLHttpRequest).toBeTruthy;
         });
+
+        it("has error-handling function.", function() {
+            expect(async.errorFn).toEqual(tmp.fn2);
+        });
+
+        it("has success-handling function.", function() {
+            expect(async.errorFn).toEqual(tmp.fn1);
+        });
     });
 
     describe(".get", function() {
         beforeEach(function() {
-            window.tmp = {};
-            window.tmp.fn1 = window.tmp.fn2 = function() {};
             spyOn(async.xhr, 'open').and.callThrough();
-            spyOn(async.xhr, 'send').and.callThrough();
-            spyOn(window.tmp, 'fn1');
-            spyOn(window.tmp, 'fn2');
-            spyOn(window, 'clearTimeout').and.callThrough();
-            spyOn(window, 'setTimeout').and.callThrough();
+            spyOn(async.xhr, 'send');
+            spyOn(window, 'setTimeout');
             async.get("www.example.com", tmp.fn1, tmp.fn2);
         });
 
-        afterEach(function() {
-            window.tmp = null;
-        });
-
         it("sets timtout", function() {
-            expect(setTimeout).toHaveBeenCalled();
+            expect(setTimeout).toHaveBeenCalledWith(async._ontimeout, 3000);
         });
 
         it("opens url.", function() {
@@ -40,23 +45,55 @@ describe("Async", function() {
 
         describe("when success,", function() {
             beforeEach(function() {
+                spyOn(window, 'clearTimeout');
+                spyOn(async, 'successFn');
                 jasmine.Ajax.requests.mostRecent().response(testResponse.success);
+            });
+
+            it("calls success function.", function() {
+                expect(async.successFn).toHaveBeenCalled();
             });
 
             it("clears timeout", function() {
                 expect(clearTimeout).toHaveBeenCalledWith(async.timer);
             });
-
-            it("calles success function.", function() {
-                expect(tmp.fn1).toHaveBeenCalled();
-            });
         });
 
         describe("when error,", function() {
-            it("calles error function.", function() {
+            beforeEach(function() {
+                spyOn(async, 'errorFn');
+                spyOn(window, 'clearTimeout');
                 jasmine.Ajax.requests.mostRecent().response(testResponse.notFound);
-                expect(tmp.fn2).toHaveBeenCalled();
             });
+
+            it("calls error function.", function() {
+                expect(async.errorFn).toHaveBeenCalled();
+            });
+
+            it("clears timeout.", function() {
+                expect(clearTimeout).toHaveBeenCalledWith(async.timer);
+            });
+        });
+    });
+
+    describe("#_ontimeout", function() {
+        beforeEach(function() {
+            spyOn(window, "clearTimeout");
+            spyOn(async.xhr, "abort");
+            spyOn(async, 'errorFn');
+            async._ontimeout();
+        });
+
+        it("clears timeout.", function() {
+            expect(window.clearTimeout).toHaveBeenCalledWith(async.timer);
+        });
+
+        it("aborts xhr request.", function() {
+            expect(async.xhr.abort).toHaveBeenCalled();
+        });
+
+        it("executes error-handling function.", function() {
+            expect(async.errorFn).toHaveBeenCalledWith("Request timed out.");
         });
     });
 });
