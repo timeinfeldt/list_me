@@ -14,12 +14,12 @@
         var list = this;
         if (!this.busy && this.cont) {
             this.busy = true;
-            Async.get(list.url + '?page=' + list.currentPage, list._successFn, list._errorFn);
+            Async.get(list.url + '?page=' + list.currentPage, list._successFn, list._errorFn, list);
         }
     };
 
     LongList.prototype._successFn = function(xhr) {
-        var data = JSON.parse(this.xhr.responseText);
+        var data = JSON.parse(xhr.responseText);
 
         this._append(data.persons);
         this.currentPage += 1;
@@ -34,7 +34,7 @@
     };
 
     // Below methods can be extracted to an independent module or class.
-    LongList.prototype._append = function() {
+    LongList.prototype._append = function(persons) {
         var div;
 
         for(var i=0; i<persons.length; i++) {
@@ -44,7 +44,6 @@
             div.innerHTML = persons[i].name;
             this.dom.appendChild(div);
         }
-
     };
 
     LongList.prototype._promptErrors = function() {};

@@ -2,7 +2,7 @@ describe("Async", function() {
     beforeEach(function() {
         window.tmp = {};
         tmp.fn1 = tmp.fn2 = function() {};
-        async = new Async(tmp.fn1, tmp.fn2);
+        async = new Async(tmp.fn1, tmp.fn2, "object");
     });
 
     afterEach(function() {
@@ -20,6 +20,10 @@ describe("Async", function() {
 
         it("has success-handling function.", function() {
             expect(async.errorFn).toEqual(tmp.fn1);
+        });
+
+        it("has context object.", function() {
+            expect(async.context).toEqual("object");
         });
     });
 

@@ -40,7 +40,7 @@ describe("LongList", function() {
 
             it("calls Async with url and callbacks.", function() {
                 expect(Async.get).toHaveBeenCalledWith(
-                    "www.example.com/persons/?page=1", buddyList._successFn, buddyList._errorFn);
+                    "www.example.com/persons/?page=1", buddyList._successFn, buddyList._errorFn, buddyList);
             });
         });
 
@@ -73,7 +73,7 @@ describe("LongList", function() {
         describe("when the data still continues,", function() {
             beforeEach(function() {
                 buddyList.xhr.responseText = testResponse.success.responseText;
-                buddyList._successFn();
+                buddyList._successFn(buddyList.xhr);
             });
 
             it("appends data to dom.", function() {
@@ -97,7 +97,7 @@ describe("LongList", function() {
         describe("when data reached to the end,", function() {
             it("remembers that there is no more data.", function() {
                 buddyList.xhr.responseText = testResponse.end.responseText;
-                buddyList._successFn();
+                buddyList._successFn(buddyList.xhr);
                 expect(buddyList.cont).toEqual(false);
             });
         });

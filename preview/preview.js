@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     var domTag = "#persons";
-    var person = new Person(domTag);
+    var personList = new LongList("www.example.com/persons/", domTag);
     var bottomReached;
 
     dom = document.querySelector(domTag);
@@ -9,10 +9,10 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     dom.onscroll = function() {
         if(bottomReached()) {
-            person.get();
+            personList.get();
             jasmine.Ajax.requests.mostRecent().response(testResponse.preview);
         }
     };
-    person.get();
+    personList.get();
     jasmine.Ajax.requests.mostRecent().response(testResponse.preview);
 });
