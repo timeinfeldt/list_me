@@ -32,7 +32,7 @@
         var async = this;
         clearTimeout(async.timer);
         this.xhr.abort();
-        this.errorFn();
+        this.errorFn(async.xhr);
     };
 
     window.Async = Async;

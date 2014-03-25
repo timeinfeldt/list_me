@@ -67,7 +67,7 @@ describe("Async", function() {
             });
 
             it("calls error function.", function() {
-                expect(async.errorFn).toHaveBeenCalled();
+                expect(async.errorFn).toHaveBeenCalledWith(async.xhr);
             });
 
             it("clears timeout.", function() {
