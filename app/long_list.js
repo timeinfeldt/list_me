@@ -34,7 +34,18 @@
     };
 
     // Below methods can be extracted to an independent module or class.
-    LongList.prototype._append = function() {};
+    LongList.prototype._append = function() {
+        var div;
+
+        for(var i=0; i<persons.length; i++) {
+            div = document.createElement("div");
+            div.className = "person";
+            div.setAttribute('data-id', persons[i].id);
+            div.innerHTML = persons[i].name;
+            this.dom.appendChild(div);
+        }
+
+    };
 
     LongList.prototype._promptErrors = function() {};
 

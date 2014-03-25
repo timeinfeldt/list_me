@@ -130,4 +130,19 @@ describe("LongList", function() {
             expect(buddyList.busy).toEqual(false);
         });
     });
+
+    describe("#_append", function() {
+        beforeEach(function() {
+            persons = [{id: 1, name: "John"}, {id: 2, name: "Thomas"}];
+            buddyList._append(persons);
+        });
+        afterEach(function() {
+            document.querySelector("#persons").innerHTML = null;
+        });
+
+        it("appends persons to DOM", function() {
+            expect(document.querySelectorAll(".person").length).toEqual(2);
+        });
+
+    });
 });
