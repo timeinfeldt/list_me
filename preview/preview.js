@@ -7,12 +7,17 @@ document.addEventListener('DOMContentLoaded', function() {
     bottomReached = function() {
         return dom.scrollTop == dom.scrollHeight - dom.clientHeight;
     };
-    dom.onscroll = function() {
-        if(bottomReached()) {
+    getItems = function(){
+        // demo only - timeout to simulate response delay
+        window.setTimeout(function () {
             personList.get();
             jasmine.Ajax.requests.mostRecent().response(testResponse.preview);
+        }, 500);
+    };
+    dom.onscroll = function() {
+        if(bottomReached()) {
+            getItems();
         }
     };
-    personList.get();
-    jasmine.Ajax.requests.mostRecent().response(testResponse.preview);
+    getItems();
 });
